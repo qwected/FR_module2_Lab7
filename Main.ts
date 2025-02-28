@@ -1,4 +1,4 @@
-import { Person, CustomDocumentType, Automobile, Motorcycle, CarBodyType, CarClass, Vehicle, Garage } from './Transport';
+import { Person, CustomDocumentType, Automobile, Motorcycle, CarBodyType, CarClass, Vehicle, Garage } from './Transport.js';
 
 function getCurrentDate(): void {
   console.log(new Date().toLocaleTimeString());
@@ -55,18 +55,16 @@ console.log('--- Владелец ---');
 owner.displayInfo();
 
 console.log('--- Автомобиль ---');
-car.displayVehicleInfo();
+console.log(car.displayVehicleInfo());
 
 console.log('--- Мотоцикл ---');
-bike.displayVehicleInfo();
+console.log(bike.displayVehicleInfo());
 
 console.log('--- Список ТС в гараже ---');
-const vehicles = garage.getAllVehicles();
-vehicles.forEach(vehicle => vehicle.displayVehicleInfo());
-
+garage.getAllVehicles().forEach(vehicle => console.log(vehicle.displayVehicleInfo()));
 
 try {
-  (car as any).newProperty = 'Test'; 
+  (car as any).newProperty = 'Test';
 } catch (e) {
   console.log('Изменение прототипа заблокировано:', e.message);
 }
