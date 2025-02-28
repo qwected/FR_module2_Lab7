@@ -1,4 +1,4 @@
-import { SealedClass, ToUpperCase } from './decorators';
+import { SealedClass, ToUpperCase } from './decorators.js';
 
 export enum CustomDocumentType {
   Passport = 'Паспорт',
@@ -6,18 +6,7 @@ export enum CustomDocumentType {
   IDCard = 'ID-карта',
 }
 
-export interface Owner {
-  lastName: string;
-  firstName: string;
-  middleName: string;
-  birthDate: Date;
-  documentType: CustomDocumentType;
-  documentSeries: string;
-  documentNumber: string;
-  displayInfo(): void;
-}
-
-export class Person implements Owner {
+export class Person {
   constructor(
     public lastName: string,
     public firstName: string,
@@ -41,8 +30,8 @@ export interface Vehicle {
   year: number;
   vin: string;
   registrationNumber: string;
-  owner: Owner;
-  displayVehicleInfo(): void;
+  owner: Person;
+  displayVehicleInfo(): string;
 }
 
 export class Transport implements Vehicle {
@@ -52,13 +41,11 @@ export class Transport implements Vehicle {
     public year: number,
     public vin: string,
     public registrationNumber: string,
-    public owner: Owner
+    public owner: Person
   ) {}
 
-  displayVehicleInfo(): void {
-    console.log(
-      `Транспортное средство: ${this.brand} ${this.model}, Год выпуска: ${this.year}, VIN: ${this.vin}, Рег. номер: ${this.registrationNumber}`
-    );
+  displayVehicleInfo(): string {
+    return `Транспортное средство: ${this.brand} ${this.model}, Год выпуска: ${this.year}, VIN: ${this.vin}, Рег. номер: ${this.registrationNumber}`;
   }
 }
 
@@ -74,66 +61,52 @@ export enum CarClass {
   Premium = 'Премиум',
 }
 
-export interface Car extends Vehicle {
-  bodyType: CarBodyType;
-  carClass: CarClass;
-}
-
 @SealedClass
-export class Automobile extends Transport implements Car {
+export class Automobile extends Transport {
   constructor(
     brand: string,
     model: string,
     year: number,
     vin: string,
     registrationNumber: string,
-    owner: Owner,
+    owner: Person,
     public bodyType: CarBodyType,
     public carClass: CarClass
   ) {
     super(brand, model, year, vin, registrationNumber, owner);
+    Object.seal(this);
   }
 
-  @ToUpperCase
-  displayVehicleInfo(): void {
-    super.displayVehicleInfo();
-    console.log(`Тип кузова: ${this.bodyType}, Класс: ${this.carClass}`);
-  }
+  @ToUpperCase()
+  displayVehicleInfo(): string {
+    return `${super.displayVehicleInfo()}, Тип кузова: ${this.bodyType}, Класс: ${this.carClass}`;
 }
 
-export interface Motorbike extends Vehicle {
-  frameType: string;
-  isForSport: boolean;
 }
 
-export class Motorcycle extends Transport implements Motorbike {
+
+export class Motorcycle extends Transport {
   constructor(
     brand: string,
     model: string,
     year: number,
     vin: string,
     registrationNumber: string,
-    owner: Owner,
+    owner: Person,
     public frameType: string,
     public isForSport: boolean
   ) {
     super(brand, model, year, vin, registrationNumber, owner);
   }
 
-  displayVehicleInfo(): void {
-    super.displayVehicleInfo();
-    console.log(`Тип рамы: ${this.frameType}, Спортивный: ${this.isForSport ? 'Да' : 'Нет'}`);
+  displayVehicleInfo(): string {
+    return `${super.displayVehicleInfo()}, Тип рамы: ${this.frameType}, Спортивный: ${this.isForSport ? 'Да' : 'Нет'}`;
   }
 }
 
-export interface VehicleStorage<T extends Vehicle> {
-  creationDate: Date;
-  vehicles: T[];
-  getAllVehicles(): T[];
-}
+export class Garage<T extends Vehicle> {
+  private vehicles: T[] = [];
 
-export class Garage<T extends Vehicle> implements VehicleStorage<T> {
-  vehicles: T[] = [];
   constructor(public creationDate: Date) {}
 
   getAllVehicles(): T[] {
@@ -144,3 +117,4 @@ export class Garage<T extends Vehicle> implements VehicleStorage<T> {
     this.vehicles.push(vehicle);
   }
 }
+
